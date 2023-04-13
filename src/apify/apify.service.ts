@@ -38,13 +38,16 @@ export class ApifyService<T> {
       }
     }
     console.log(functions);
-    const res = await page.evaluate(
-      (selectors: Record<keyof T, any>, elementContainerSelector: string, fns: Record<keyof T, boolean>) => {
+    const res: any[] = (await page.evaluate(
+      async (selectors: Record<keyof T, any>, elementContainerSelector: string, fns: Record<keyof T, boolean>) => {
         console.log(selectors);
-        return [...document.querySelectorAll(elementContainerSelector)].map((element) => {
+
+        const responses: any[] = [];
+        /*return*/
+        for (const element of [...document.querySelectorAll(elementContainerSelector)]) /*.map((element) =>*/ {
           const response: Record<keyof T, unknown> = {} as Record<keyof T, unknown>;
 
-          [...Object.keys(fns), ...Object.keys(selectors)].forEach((key) => {
+          for (const key of [...Object.keys(fns), ...Object.keys(selectors)]) /*.forEach((key) =>*/ {
             console.log('Is function ' + key, typeof selectors[key as keyof T]);
             if (fns[key as keyof T]) {
               console.log('Is function ' + key);
@@ -52,21 +55,22 @@ export class ApifyService<T> {
               // const { dom: doc2 } = new JSDOM.JSDOM(document.body.outerHTML);
               //@ts-ignore
               window.el = element;
-              response[key as keyof T] = eval(`${key}(window.el.outerHTML);`); // eval(`${key}(${element});`);
-              return;
+              response[key as keyof T] = await eval(`${key}(window.el.outerHTML);`); // eval(`${key}(${element});`);
+              continue;
             } else if (typeof selectors[key as keyof T] === 'string') {
               response[key as keyof T] =
                 (element.querySelector(selectors[key as keyof T]) as unknown as HTMLElement)?.innerText ?? ('' as any);
             }
-          });
-          return response;
-        });
+          } // );
+          console.log(response);
+          responses.push(response);
+        } // )
+        return responses;
       },
       this.childSelectors,
       this.elementContainerSelector,
       functions
-    );
-
+    )) as any[];
     for (const entry of res) {
       for (const key of Object.keys(this.transformers)) {
         entry[key as keyof typeof entry] = await this.transformers[key as keyof Transformers<T>]?.(
