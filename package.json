@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsdom": "^21.1.1",
     "@types/node": "^16.7.23",
     "@types/puppeteer": "^1.20.2",
     "eslint": "8.20.0",
@@ -30,6 +31,7 @@
     "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
+    "jsdom": "^21.1.1",
     "lodash.clonedeep": "^4.5.0",
     "puppeteer": "^18.0.5",
     "puppeteer-extra": "^3.1.15",

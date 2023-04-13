@@ -6,7 +6,11 @@ export const willhabenApify = new ApifyService<WillhabenApifyModel>(
   {
     productName: 'h3',
     productPrice: 'span',
-    publishDate: 'p',
+    // publishDate: 'p',
+    publishDate: (element: string) => {
+      console.log(element);
+      return ''; // element.querySelector('p')?.innerHTML;
+    },
   },
   {
     productPrice: (value: string): number => {
