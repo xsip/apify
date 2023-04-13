@@ -1,6 +1,6 @@
 import { WillhabenApifyModel } from './willhaben-apified.interfaces';
 import { ApifyService } from '../apify.service';
-
+import * as jsdom from 'jsdom';
 export const willhabenApify = new ApifyService<WillhabenApifyModel>(
   '[id^="search-result-entry-header-"]',
   {
@@ -8,8 +8,8 @@ export const willhabenApify = new ApifyService<WillhabenApifyModel>(
     productPrice: 'span',
     // publishDate: 'p',
     publishDate: (element: string) => {
-      console.log(element);
-      return ''; // element.querySelector('p')?.innerHTML;
+      const dom = new jsdom.JSDOM(element);
+      return dom.window.document.body.querySelector('p')?.innerHTML;
     },
   },
   {
